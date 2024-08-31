@@ -16,6 +16,16 @@ router = APIRouter()
 @router.get("/file/")
 async def get_file(url: str):
     
+    """
+    Given a URL, download the file from the URL and return a StreamingResponse
+    containing the file data. The file is expected to be a CSV file.
+
+    Args:
+        url (str): URL of the file to download.
+
+    Returns:
+        StreamingResponse: A StreamingResponse containing the file data.
+    """
     try:
         file_stream = download_public_s3_file_to_dataframe(url)
         return StreamingResponse(file_stream, media_type="text/csv", headers={"Content-Disposition": "attachment; filename=downloaded_file.csv"})
@@ -24,4 +34,15 @@ async def get_file(url: str):
 
 @router.post("/process_file/")
 async def detect_start(url:str, significance_threshold: int):
+    """
+    Run the start-stop detection algorithm on a CSV file.
+
+    Args:
+        url (str): URL of the CSV file to process.
+        significance_threshold (int): The minimum number of data points
+            required to consider a start or stop event as significant.
+
+    Returns:
+        The result of the start-stop detection algorithm.
+    """
     return await start_stop_detection(url, significance_threshold)

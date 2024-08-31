@@ -5,6 +5,15 @@ from app.utils.jwt_utility import decode_access_token
 
 class JWTAuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        """
+        A middleware that verifies a JWT token in the Authorization header.
+        If the header is not present or the token is invalid, it raises a 401 error.
+        If the token is valid, it sets the user in the request state.
+
+        :param request: The request to be processed.
+        :param call_next: The next middleware in the chain.
+        :return: The response from the next middleware.
+        """
         if request.url.path in ["/docs", "/create_user", "/login"]:
             response = await call_next(request)
             return response

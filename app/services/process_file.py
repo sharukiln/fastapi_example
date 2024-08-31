@@ -6,6 +6,14 @@ from starlette.responses import StreamingResponse
 from app.utils.file_extraction_utility import download_public_s3_file_to_dataframe
 
 def dataframe_to_csv(df):
+    
+    """
+    Converts a Pandas DataFrame into a CSV file and returns a StreamingResponse
+    suitable for returning to a web client.
+
+    :param df: A Pandas DataFrame object
+    :return: A StreamingResponse containing the CSV file data
+    """
     buffer = io.StringIO()
     df.to_csv(buffer, index=False)
     buffer.seek(0)
@@ -17,7 +25,15 @@ def dataframe_to_csv(df):
         headers={"Content-Disposition": "attachment; filename=equipment_monitor.csv"}
     )
 
-async def start_stop_detection(url:str, significance_threshold:int):
+def start_stop_detection(url:str, significance_threshold:int):
+    """
+    Downloads a CSV file from the given S3 URL and applies the detection logic as follows:
+    - If pressure_1 increases by more than significance_threshold and pressure_2 does not increase and temperature decreases, flag equipment_stop as True.
+    - If pressure_1 decreases and temperature increases, flag equipment_restart as True.
+    - Create stop_time and restart_time columns with the timestamp of the corresponding event.
+    - Drop all rows where both stop_time and restart_time are NaN.
+    - Return the resulting DataFrame as a CSV file.
+    """    
     csv_data = download_public_s3_file_to_dataframe(url)
     df = pandas.read_csv(csv_data)
     df.loc[((df["pressure_1"].diff() > significance_threshold) & (df["pressure_2"].diff() == 0) & (df["temperature"].diff() < 0)), 'equipment_stop'] = True
@@ -31,4 +47,3 @@ async def start_stop_detection(url:str, significance_threshold:int):
     df = df[["equipment_name", "stop_time", "restart_time"]].dropna(how="all", subset=["stop_time", "restart_time"])
     return dataframe_to_csv(df)
 
-# url = "https://enfinite-public.s3.amazonaws.com/sample_data/sample_event_detection.csv"
