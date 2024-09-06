@@ -3,7 +3,7 @@ import numpy
 import io
 from starlette.responses import StreamingResponse
 
-from app.utils.file_extraction_utility import download_public_s3_file_to_dataframe
+from app.utils.file_extraction_utility import download_public_s3_file
 
 def dataframe_to_csv(df):
     
@@ -34,7 +34,7 @@ def start_stop_detection(url:str, significance_threshold:int):
     - Drop all rows where both stop_time and restart_time are NaN.
     - Return the resulting DataFrame as a CSV file.
     """    
-    csv_data = download_public_s3_file_to_dataframe(url)
+    csv_data = download_public_s3_file(url)
     df = pandas.read_csv(csv_data)
     df.loc[((df["pressure_1"].diff() > significance_threshold) & (df["pressure_2"].diff() == 0) & (df["temperature"].diff() < 0)), 'equipment_stop'] = True
     df['equipment_stop'].fillna(False, inplace=True)
