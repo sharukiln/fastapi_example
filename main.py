@@ -13,7 +13,6 @@ app.include_router(start_stop_detection)
 app.include_router(health_check)
 app.include_router(login)
 
-# init_logging()
 
 if __name__ == "__main__":
     # Use this for debugging purposes only

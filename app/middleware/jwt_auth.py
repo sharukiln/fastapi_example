@@ -14,7 +14,7 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
         :param call_next: The next middleware in the chain.
         :return: The response from the next middleware.
         """
-        if request.url.path in ["/docs", "/create_user", "/login"]:
+        if request.url.path in ["/docs", "/create_user", "/login", '/openapi.json']:
             response = await call_next(request)
             return response
         auth_header = request.headers.get("Authorization")
