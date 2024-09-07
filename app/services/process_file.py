@@ -38,7 +38,7 @@ def start_stop_detection(url:str, significance_threshold:int):
     df = pandas.read_csv(csv_data)
     df.loc[((df["pressure_1"].diff() > significance_threshold) & (df["pressure_2"].diff() == 0) & (df["temperature"].diff() < 0)), 'equipment_stop'] = True
     df['equipment_stop'].fillna(False, inplace=True)
-    df.loc[(df["pressure_1"].diff() < 0) & (df['temperature'].diff() > 1), "equipment_restart"] = True
+    df.loc[(df["pressure_1"].diff() < 0) & (df['temperature'].diff() > significance_threshold), "equipment_restart"] = True
     df['equipment_restart'].fillna(False, inplace=True)
     # df['stop_time'] = df.apply(lambda x: x['timestamp'] if x['equipment_stop'] else numpy.nan, axis=1)
     # df['restart_time'] = df.apply(lambda x: x['timestamp'] if x['equipment_restart'] else numpy.nan, axis=1)
