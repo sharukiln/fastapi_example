@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends
-from app.models.user_model import UserBase
+from app.models.user_model import UserBase, LoginRequest
 from app.utils.jwt_utility import create_access_token, get_current_user
 from datetime import datetime, timedelta
 from typing import Optional
@@ -10,7 +10,7 @@ router = APIRouter()
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 @router.post("/login")
-async def login(username: str, password: str):
+async def login(login: LoginRequest):
     """
     Handles user login.
 
@@ -20,10 +20,10 @@ async def login(username: str, password: str):
     Raises an HTTPException with status code 401 if the credentials are
     invalid.
     """
-    if username == "testuser" and password == "testpassword":
+    if login.username == "testuser" and login.password == "testpassword":
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
-            data={"sub": username, "email": "test@email.com"}, expires_delta=access_token_expires)
+            data={"sub": login.username, "email": "test@email.com"}, expires_delta=access_token_expires)
         return {"access_token": access_token, "token_type": "bearer"}
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
