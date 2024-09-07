@@ -18,3 +18,7 @@ class UserResponse(UserBase):
 
 class TokenData(BaseModel):
     token: str
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str

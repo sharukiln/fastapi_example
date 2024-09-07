@@ -45,4 +45,4 @@ async def detect_start(url:str, significance_threshold: int):
     Returns:
         The result of the start-stop detection algorithm.
     """
-    return await start_stop_detection(url, significance_threshold)
+    return start_stop_detection(url, significance_threshold)
